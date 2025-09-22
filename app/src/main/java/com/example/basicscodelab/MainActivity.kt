@@ -10,8 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.basicscodelab.ui.theme.BasicsCodelabTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,64 +19,104 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BasicsCodelabTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Greetings()
-                }
+                MyApp(modifier = Modifier.fillMaxSize())
             }
         }
     }
 }
 
 @Composable
-fun Greetings(
+fun MyApp(modifier: Modifier = Modifier) {
+    var shouldShowOnboarding by remember { mutableStateOf(true) }
+
+    Surface(modifier) {
+        if (shouldShowOnboarding) {
+            OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
+        } else {
+            Greetings()
+        }
+    }
+}
+
+@Composable
+fun OnboardingScreen(
+    onContinueClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Welcome to the Basics Codelab!")
+        Button(
+            modifier = Modifier.padding(vertical = 24.dp),
+            onClick = onContinueClicked
+        ) {
+            Text("Continue")
+        }
+    }
+}
+
+@Composable
+private fun Greetings(
+    modifier: Modifier = Modifier,
     names: List<String> = listOf("World", "Compose")
 ) {
-    LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
-        items(names) { name ->
+    Column(modifier = modifier.padding(vertical = 4.dp)) {
+        for (name in names) {
             Greeting(name = name)
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
+fun Greeting(name: String, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
+    val extraPadding = if (expanded) 48.dp else 0.dp
 
     Surface(
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .fillMaxWidth()
+        modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(24.dp),
-            verticalAlignment = Alignment.Top // cambia a Top para alinear el contenido expandido
-        ) {
+        Row(modifier = Modifier.padding(24.dp)) {
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(bottom = extraPadding)
             ) {
-                Text(text = "Hello")
+                Text(text = "Hello,")
                 Text(text = name)
-
-                // Mostrar contenido extra solo si expanded == true
-                if (expanded) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "")
-                }
             }
-
-            Button(onClick = { expanded = !expanded }) {
+            ElevatedButton(
+                onClick = { expanded = !expanded }
+            ) {
                 Text(if (expanded) "Show less" else "Show more")
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 320, heightDp = 320)
+@Composable
+fun OnboardingPreview() {
+    BasicsCodelabTheme {
+        OnboardingScreen(onContinueClicked = {})
+    }
+}
+
+@Preview(showBackground = true, widthDp = 320)
 @Composable
 fun GreetingPreview() {
     BasicsCodelabTheme {
         Greetings()
+    }
+}
+
+@Preview
+@Composable
+fun MyAppPreview() {
+    BasicsCodelabTheme {
+        MyApp(Modifier.fillMaxSize())
     }
 }
