@@ -40,7 +40,6 @@ fun Greetings(
 
 @Composable
 fun Greeting(name: String) {
-    // Estado para cambiar el texto del botón
     var expanded by remember { mutableStateOf(false) }
 
     Surface(
@@ -52,13 +51,19 @@ fun Greeting(name: String) {
         Row(
             modifier = Modifier
                 .padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top // cambia a Top para alinear el contenido expandido
         ) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(text = "Hello")
                 Text(text = name)
+
+                // Mostrar contenido extra solo si expanded == true
+                if (expanded) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "")
+                }
             }
 
             Button(onClick = { expanded = !expanded }) {
